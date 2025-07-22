@@ -3,7 +3,22 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ItemController;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendReportMail;
 
+Route::get('/test-mail', function () {
+    $name = 'Yuvan';
+    $filePath = storage_path('app/test.pdf');
+
+    // Create a dummy file if not present
+    if (!file_exists($filePath)) {
+        file_put_contents($filePath, 'This is a test PDF content.');
+    }
+
+    Mail::to('yuvansarran1001@gmail.com')->send(new SendReportMail($name, $filePath));
+
+    return 'Test mail sent!';
+});
 
 
 Route::view('/register', 'auth.register');
@@ -27,7 +42,7 @@ Route::view('/items', 'items');
 
 
 
-// Route::get('/', [UserController::class, 'index']);
+Route::get('/', [UserController::class, 'index']);
 Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
 Route::get('/user/edit/{id}', [UserController::class, 'edit']);
 Route::delete('/user/delete/{id}', [UserController::class, 'destroy']);

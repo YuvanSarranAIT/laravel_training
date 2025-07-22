@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+// for sending emails
+use App\Mail\SendReportMail;
+use Illuminate\Support\Facades\Mail;
+
 
 class AuthController extends Controller
 {
@@ -45,4 +49,18 @@ class AuthController extends Controller
 
         return response()->json(['token' => $token]);
     }
+
+
+    // This method is just an example of how to send an email with a file attachment
+    // You can call this method from any route or controller where you need to send the email
+
+    public function sendReport()
+{
+    $name = 'yuvan sarran';
+    $filePath = storage_path('app/reports/monthly.pdf'); // Path to the file
+
+    Mail::to('yuvansarran1001@gmail.com')->send(new SendReportMail($name, $filePath));
+
+    return response()->json(['message' => 'Email sent successfully!']);
+}
 }

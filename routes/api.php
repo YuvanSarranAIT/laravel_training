@@ -4,10 +4,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\UserController;
 
 
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login',    [AuthController::class, 'login']);
+Route::get('/list-user', [UserController::class, 'listAllUser']);
+Route::post('/create-user', [UserController::class, 'create']);
+Route::put('/update-user/{id}', [UserController::class, 'update']);
+Route::delete('/delete-user/{id}', [UserController::class, 'delete']);
+
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
 
 
 Route::middleware(['jwt.verify'])->group(function () {
@@ -41,5 +49,4 @@ Route::get('/hello', function () {
         'message' => 'Hello!'
     ]);
 });
- 
- 
+

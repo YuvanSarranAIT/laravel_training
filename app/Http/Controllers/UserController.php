@@ -6,9 +6,78 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use App\Repositories\User\UserRepositoryInterface;
+
 
 class UserController extends Controller
 {
+    public function __construct(UserRepositoryInterface $userRepo)
+    {
+        $this->userRepo = $userRepo;
+    }
+
+    public function listAllUser()
+    {
+        $userdata = $this->userRepo->getAll();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User Recived successfully',
+            'data' => $userdata,
+        ]);
+    }
+
+    public function create(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phonenumber' => 'required|digits:10',
+            'address' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'country' => 'required',
+            'zipcode' => 'required',
+            'role' => 'required|integer',
+            'gender' => 'required',
+            'dob' => 'required|date',
+            // Add other fields as necessary
+        ]);
+
+        $user = $this->userRepo->create($validatedData);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User created successfully',
+            'data' => $user,
+        ]);
+    }
+    public function update(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            // Add other fields as necessary
+        ]);
+
+        $updatedUser = $this->userRepo->update($id, $validatedData);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User updated successfully',
+            'data' => $updatedUser,
+        ]);
+    }
+    public function delete($id)
+    {
+        $this->userRepo->delete($id);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User deleted successfully',
+        ]);
+    }
+
     public function index()
     {
         $users = User::latest()->paginate(10);
@@ -22,6 +91,7 @@ class UserController extends Controller
             // Log input data
             Log::info('User store request received', $request->all());
 
+            // Validate the request data
             $rules = [
                 'name' => 'required|string',
                 'email' => 'required|email|unique:users,email,' . $request->id,
